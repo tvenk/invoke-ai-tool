@@ -65,7 +65,7 @@ def load_config():
                 # Opens the configuration file in read mode ('r').
                 config = json.load(f)
                 # Loads the JSON data from the file.
-                # Ensure necessary keys exist
+                # Ensure necessary keys exist (for backward compatibility)
                 if 'ai_sites' not in config:
                     config['ai_sites'] = {}
                 if 'browser_profile' not in config:
@@ -199,74 +199,48 @@ def select_browser_data_dir(config):
         print("Keeping current selection.")
     return config
 
+
 def select_ai(config):
     """Display and select from available AI sites"""
     ai_sites = config.get('ai_sites', {})
     print("\nChoose your AI destination:")
-    # Prints a header for the AI site selection menu.
     for key, site in ai_sites.items():
-        # Iterates through the key-value pairs in the 'ai_sites' dictionary.
         print(f"{key}: {site['name']} ({site['url']})")
-        # Prints each AI site's number, name, and URL.
     print("\nOptions:")
-    # Prints a header for the available options.
     print("add: Add a new AI site")
-    # Prints the 'add' option.
     print("manage: Edit/remove AI sites")
-    # Prints the 'manage' option.
-    print("config_profile: Configure Browser Profile") # Option to configure browser profile
-    print("config_datadir: Configure Browser Data Directories") # Option to configure browser data dirs
-    print("select_datadir: Select Browser Data Directory") # Option to select browser data dir
+    print("config_profile: Configure Browser Profile")
+    print("config_datadir: Configure Browser Data Directories")
+    print("select_datadir: Select Browser Data Directory")
     print("exit: Close the program")
-    # Prints the 'exit' option.
 
     while True:
-        # Starts an infinite loop to keep prompting the user for input until a valid choice is made.
         choice = input("\nSelect AI by number or option: ").strip()
-        # Prompts the user to enter their choice and removes any leading or trailing whitespace.
         if choice.lower() == 'add':
-            # Checks if the user entered 'add' (case-insensitive).
             return 'add'
-            # Returns the string 'add' to indicate the user wants to add a new site.
         elif choice.lower() == 'manage':
-            # Checks if the user entered 'manage' (case-insensitive).
             return 'manage'
-            # Returns the string 'manage' to indicate the user wants to manage existing sites.
         elif choice.lower() == 'config_profile':
-            # Checks if the user entered 'config_profile'.
             return 'config_profile'
         elif choice.lower() == 'config_datadir':
-            # Checks if the user entered 'config_datadir'.
             return 'config_datadir'
         elif choice.lower() == 'select_datadir':
-            # Checks if the user entered 'select_datadir'.
             return 'select_datadir'
         elif choice.lower() == 'exit':
-            # Checks if the user entered 'exit' (case-insensitive).
             return 'exit'
-            # Returns the string 'exit' to indicate the user wants to exit the program.
         elif choice in ai_sites:
-            # Checks if the user's input is a valid key in the 'ai_sites' dictionary.
             return choice
-            # Returns the user's choice (the number of the selected AI site).
         else:
-            # Executes if the user's input is not one of the valid options.
             print("Invalid choice. Try again.")
-            # Prints an error message and the loop continues to prompt for input.
 
 def add_new_ai(ai_sites):
     """Add a new AI site to the configuration"""
     next_id = str(max([int(k) for k in ai_sites.keys()]) + 1) if ai_sites else "1"
-    # Determines the next available ID for a new AI site. If there are existing sites, it finds the maximum ID and increments it. Otherwise, it starts with "1".
 
     name = input("Enter AI name: ").strip()
-    # Prompts the user to enter the name of the new AI site and removes whitespace.
     url = input("Enter AI URL (include https://): ").strip()
-    # Prompts the user to enter the URL of the new AI site and removes whitespace.
     initial_xpath = input("Enter initial XPath for input field: ").strip()
-    # Prompts the user to enter the XPath for the initial input field and removes whitespace.
     subsequent_xpath = input("Enter subsequent XPath for input field: ").strip()
-    # Prompts the user to enter the XPath for subsequent input fields and removes whitespace.
 
     ai_sites[next_id] = {
         "name": name,
@@ -274,49 +248,32 @@ def add_new_ai(ai_sites):
         "initial_xpath": initial_xpath,
         "subsequent_xpath": subsequent_xpath
     }
-    # Creates a new entry in the 'ai_sites' dictionary with the generated ID and the provided details.
 
     return ai_sites
-    # Returns the updated 'ai_sites' dictionary (saving happens in main).
 
 def manage_ai_sites(ai_sites):
     """Manage (edit/remove) existing AI sites"""
     while True:
-        # Starts an infinite loop to allow for multiple management actions.
         print("\nManage AI Sites:")
-        # Prints a header for the management menu.
         if not ai_sites:
-            # Checks if the 'ai_sites' dictionary is empty (no sites configured).
             print("No sites configured yet.")
             input("Press Enter to return...")
             return ai_sites
-            # If no sites are configured, informs the user and returns to the main menu.
 
         for key, site in ai_sites.items():
-            # Iterates through the configured AI sites.
             print(f"{key}: {site['name']} ({site['url']})")
-            # Prints the number, name, and URL of each configured site.
 
         choice = input("\nSelect site number to manage (or type 'back' to return): ").strip()
-        # Prompts the user to select a site to manage or type 'back'.
 
         if choice.lower() == 'back':
-            # Checks if the user wants to go back to the main menu.
             return ai_sites
-            # Returns the current 'ai_sites' dictionary.
         elif choice in ai_sites:
-            # Checks if the user's input is a valid key in the 'ai_sites' dictionary.
             action = input(f"Manage '{ai_sites[choice]['name']}'. Choose action (edit/remove): ").strip().lower()
-            # Prompts the user to choose between editing or removing the selected site.
 
             if action == 'remove':
-                # Executes if the user wants to remove the site.
                 confirm = input(f"Are you sure you want to remove {ai_sites[choice]['name']}? (y/n): ").strip().lower()
-                # Asks for confirmation before removing.
                 if confirm == 'y':
-                    # Proceeds with removal if the user confirms.
                     del ai_sites[choice]
-                    # Deletes the selected site from the dictionary.
                     # Re-index if necessary to keep IDs sequential (optional but cleaner)
                     new_ai_sites = {}
                     for i, (old_key, site_data) in enumerate(ai_sites.items()):
@@ -324,53 +281,40 @@ def manage_ai_sites(ai_sites):
                     ai_sites = new_ai_sites
                     print("Site removed successfully.")
             elif action == 'edit':
-                # Executes if the user wants to edit the site.
                 print(f"Editing {ai_sites[choice]['name']} - press Enter to keep current values")
-                # Informs the user about editing and how to keep current values.
 
                 name = input(f"Name [{ai_sites[choice]['name']}]: ").strip()
-                # Prompts for a new name, showing the current name in brackets.
                 if name:
                     ai_sites[choice]['name'] = name
-                    # Updates the name if the user provides a new one.
 
                 url = input(f"URL [{ai_sites[choice]['url']}]: ").strip()
-                # Prompts for a new URL, showing the current URL.
                 if url:
                     ai_sites[choice]['url'] = url
-                    # Updates the URL if provided.
 
                 # Be careful editing XPaths - display current for reference
                 print(f"Current Initial XPath: {ai_sites[choice]['initial_xpath']}")
                 initial_xpath = input("New Initial XPath (leave blank to keep): ").strip()
-                # Prompts for a new initial XPath, showing the current one.
                 if initial_xpath:
                     ai_sites[choice]['initial_xpath'] = initial_xpath
-                    # Updates the initial XPath if provided.
 
                 print(f"Current Subsequent XPath: {ai_sites[choice]['subsequent_xpath']}")
                 subsequent_xpath = input("New Subsequent XPath (leave blank to keep): ").strip()
-                # Prompts for a new subsequent XPath, showing the current one.
                 if subsequent_xpath:
                     ai_sites[choice]['subsequent_xpath'] = subsequent_xpath
-                    # Updates the subsequent XPath if provided.
 
                 print("Note: Browser profile and data directory are configured globally via the main menu options.")
 
             else:
-                # Executes if the user enters an invalid action.
                 print("Invalid action. Please choose 'edit' or 'remove'.")
         else:
-            # Executes if the user enters an invalid site number.
             print("Invalid site number.")
     return ai_sites
 
 def generate_random_string(length=8):
     """Generate a random string (kept in case needed elsewhere)"""
     letters = string.ascii_lowercase
-    # Defines a string containing all lowercase letters.
     return ''.join(random.choice(letters) for i in range(length))
-    # Generates a random string of the specified length using the lowercase letters.
+
 
 # --- MODIFIED open_in_browser ---
 def open_in_browser(url, browser_profile="Default", user_data_dir=None):
@@ -378,60 +322,41 @@ def open_in_browser(url, browser_profile="Default", user_data_dir=None):
        and user data directory while attempting to keep the terminal in focus."""
     # ---vvv IMPORTANT: Verify these paths are correct for YOUR system vvv---
     default_user_data_dir = "/home/apexnelbo/.config/BraveSoftware/Brave-Browser"
-    # Specifies the default path to the Brave Browser user data directory. **USER-SPECIFIC**
     user_data_dir_to_use = user_data_dir if user_data_dir else default_user_data_dir
-    # Use the provided user_data_dir if available, otherwise use the default.
     profile_dir = browser_profile # Use the provided browser profile
-    # Specifies the name of the Brave Browser profile directory to use. **USER-SPECIFIC**
     brave_path = "/usr/bin/brave-browser"
-    # Specifies the path to the Brave Browser executable. **SYSTEM-SPECIFIC**
     chromedriver_path = "/usr/local/bin/chromedriver"
-    # Specifies the path to the ChromeDriver executable. **SYSTEM-SPECIFIC**
     # ---^^^ IMPORTANT: Verify these paths are correct for YOUR system ^^^---
 
     options = Options()
-    # Creates an instance of Chrome Options to configure the browser.
     options.binary_location = brave_path
-    # Sets the binary location (executable path) for Brave Browser.
 
     # --- Point Selenium to your existing profile ---
     options.add_argument(f"--user-data-dir={user_data_dir_to_use}")
-    # Adds an argument to Chrome Options to specify the user data directory.
     options.add_argument(f"--profile-directory={profile_dir}")
-    # Adds an argument to Chrome Options to specify the profile directory to use.
     # --- ---
 
     # Keep other useful options
     # options.add_argument("--start-maximized") # Can sometimes interfere with positioning, enable if needed
     options.add_argument("--no-first-run")
-    # Adds an argument to prevent Brave's first-run setup page from appearing.
     options.add_argument("--no-default-browser-check")
-    # Adds an argument to disable the default browser check.
 
     # --- Keep the window position arguments to try and keep terminal focus ---
     options.add_argument("--window-position=2000,2000")  # Position window off-screen initially
-    # Adds an argument to initially position the browser window off-screen.
     # --- ---
 
     service = Service(executable_path=chromedriver_path)
-    # Creates a Service object for ChromeDriver, specifying its executable path.
     print(f"\nLaunching browser with profile '{profile_dir}' using data directory '{user_data_dir_to_use}' to {url}")
-    # Prints a message indicating the browser launch details.
 
     # Add a try-except block for potential profile locking issues
     driver = None
-    # Initializes the driver variable to None.
     try:
         # Detach option can sometimes help if the script ends but you want the browser open
         # options.add_experimental_option("detach", True)
         driver = webdriver.Chrome(service=service, options=options)
-        # Creates a new Chrome webdriver instance using the configured service and options.
         driver.get(url)  # Add this line to navigate to the URL
-        # Navigates the browser to the specified URL.
     except WebDriverException as e:
-        # Catches exceptions related to WebDriver (e.g., ChromeDriver issues, profile locking).
         print(f"Error launching WebDriver: {e}")
-        # Prints the specific WebDriver exception error.
         print("-------------------------------------------------------------")
         print("Potential Causes & Solutions:")
         print("1. Brave browser might already be running and locking the profile.")
@@ -444,38 +369,28 @@ def open_in_browser(url, browser_profile="Default", user_data_dir=None):
         print("   => Run 'ls -l /usr/local/bin/chromedriver' and 'chmod +x /usr/local/bin/chromedriver' if needed.")
         print("-------------------------------------------------------------")
         return None # Indicate failure to launch
-        # Returns None to indicate that the browser failed to launch.
     except Exception as e:
-        # Catches any other unexpected exceptions during browser launch.
         print(f"An unexpected error occurred during browser launch: {e}")
         return None
-        # Returns None to indicate launch failure.
 
     # Wait for the page to load and browser to initialize (might need slightly longer for existing profiles)
     time.sleep(3) # Adjusted sleep time
-    # Pauses the script for 3 seconds to allow the page to load.
 
     # --- Move window to visible area but not necessarily front-center ---
     try:
         # Check if the window handle is still valid before trying to move/resize
         if driver.window_handles:
-            # Checks if there are any active browser window handles.
             driver.set_window_position(100, 100)
-            # Sets the position of the browser window to (100, 100) pixels.
             driver.set_window_size(1200, 800)
-            # Sets the size of the browser window to 1200x800 pixels.
             print("Browser launched. Terminal should remain in focus.")
             print("If browser took focus, click back on this terminal window to continue.")
         else:
-            # Executes if no browser window handles are found.
             print("Warning: Browser window handle not found after launch. Browser might have closed.")
             if driver:
                 driver.quit()
-                # Attempts to close the browser if the driver instance exists.
             return None # Indicates failure
-            # Returns None to indicate failure.
     except WebDriverException as e:
-        # Handles WebDriver exceptions that might occur during window manipulation.
+        # Handle cases where the browser might close unexpectedly during setup
         print(f"Warning: Could not reposition/resize browser window: {e}")
         print("The browser might have closed or failed to initialize correctly.")
         # Attempt to quit cleanly if driver exists
@@ -486,7 +401,6 @@ def open_in_browser(url, browser_profile="Default", user_data_dir=None):
                 pass # Ignore errors during cleanup quit
         return None
     except Exception as e:
-        # Handles any other unexpected errors during window manipulation.
         print(f"An unexpected error occurred during window repositioning: {e}")
         if driver:
             try:
@@ -496,35 +410,28 @@ def open_in_browser(url, browser_profile="Default", user_data_dir=None):
         return None
 
     return driver # Returns the webdriver instance
-    # Returns the WebDriver instance if the browser launched successfully.
 # --- END MODIFIED open_in_browser ---
 
-def send_to_ai(driver, mode, initial_xpath, subsequent_xpath, is_initial=True):
+# Added 'wait' as a parameter
+def send_to_ai(driver, mode, initial_xpath, subsequent_xpath, is_initial, wait):
     """Send clipboard content with additional user input to AI chat interface"""
-    wait = WebDriverWait(driver, 30) # 30 second wait time
-    # Creates a WebDriverWait instance with a timeout of 30 seconds.
+    # Removed wait initialization from here
+    # wait = WebDriverWait(driver, 30) # 30 second wait time
     try:
         xpath_to_use = initial_xpath if is_initial else subsequent_xpath
-        # Determines which XPath to use based on whether it's the initial interaction.
         print(f"Attempting to find input element using XPath: {xpath_to_use}")
-        # Prints the XPath being used to locate the input element.
 
         if mode == "1":  # Text mode
             print("\nPlease copy the text you want to send to the clipboard.")
-            # Prompts the user to copy text to the clipboard.
             input("Press Enter after copying the text...")
-            # Waits for the user to press Enter after copying.
             clipboard_text = pyperclip.paste()
-            # Pastes the content of the clipboard into the 'clipboard_text' variable.
             if not clipboard_text:
-                # Checks if the clipboard is empty.
                 print("Warning: Clipboard is empty.")
                 # Optionally ask user if they want to continue or retry
-                # return # Or proceed cautiously
+                # return False # Or proceed cautiously
 
             # Store the original clipboard content
             original_clipboard_text = clipboard_text
-            # Stores the initial clipboard content in a separate variable.
 
             print("\nClipboard content detected:")
             print("------------------------")
@@ -532,49 +439,48 @@ def send_to_ai(driver, mode, initial_xpath, subsequent_xpath, is_initial=True):
             print("------------------------")
 
             additional_text = input("\nType your question or additional context (press Enter when done, leave blank if none):\n").strip()
-            # Prompts the user for additional text or a question.
 
             final_text = original_clipboard_text  # Use the original content here
-            # Initializes 'final_text' with the original clipboard content.
             if additional_text:
-                # Checks if the user provided any additional text.
                 # Add separators for clarity when combining
                 final_text = f"{original_clipboard_text}\n\n---\n\n{additional_text}"
-                # Combines the original clipboard text and the additional text with separators.
 
             # Update clipboard ONLY if additional text was added, to avoid pasting just the prompt
             if additional_text:
                 pyperclip.copy(final_text)
-                # Copies the combined text to the clipboard.
                 print("\nSending combined text (original clipboard + your input) to AI...")
             elif original_clipboard_text: # Use the original here as well
-                # Checks if there was original clipboard text (even if no additional text).
                 print("\nSending original clipboard text to AI...")
             else:
                 print("\nNothing to send (Clipboard was empty and no additional text provided).")
-                return # Nothing to send
+                return False # Nothing to send, return False for continue
 
             # --- Common Paste Logic for Text Mode ---
+            # Use the 'wait' object passed as a parameter
             search_bar = wait.until(EC.visibility_of_element_located((By.XPATH, xpath_to_use)))
-            # Waits until the input element is visible on the page.
             # It's often better to clear the field first, though some sites might not need it
             # search_bar.clear() # Uncomment if needed, test carefully
-            search_bar.click() # Clicks on the input field to ensure focus
+            search_bar.click() # Ensure focus
             time.sleep(0.2) # Small delay can help
 
             # Paste content from clipboard (which now contains final_text or original clipboard_text)
             actions = ActionChains(driver)
-            # Creates an ActionChains object to perform a sequence of actions.
             actions.key_down(Keys.CONTROL).send_keys('v').key_up(Keys.CONTROL).perform()
-            # Simulates pressing Ctrl+V (paste).
             time.sleep(0.3) # Give paste time to register
             input("Press Enter to send the text...")
-            # Waits for the user to press Enter to send the content.
             actions.send_keys(Keys.RETURN).perform()
-            # Simulates pressing the ENTER key to send the message.
             print("Content sent.")
-            # Prints a confirmation message.
             # --- End Common Paste Logic ---
+
+            # Ask if the user wants to continue the conversation
+            while True:
+                continue_choice = input("Continue conversation? (y/n): ").strip().lower()
+                if continue_choice in ['y', 'yes']:
+                    return True # Indicate continue
+                elif continue_choice in ['n', 'no']:
+                    return False # Indicate return to menu
+                else:
+                    print("Invalid input. Please enter 'y' or 'n'.")
 
         elif mode == "2":  # Screenshot mode - Modified to paste after text
             print("\nPlease copy the screenshot you want to send to the clipboard.")
@@ -583,6 +489,7 @@ def send_to_ai(driver, mode, initial_xpath, subsequent_xpath, is_initial=True):
 
             print("\nLocating input field...")
             xpath_for_input = initial_xpath if is_initial else subsequent_xpath
+            # Use the 'wait' object passed as a parameter
             search_bar = wait.until(EC.visibility_of_element_located((By.XPATH, xpath_for_input)))
             search_bar.click()
             time.sleep(0.2)
@@ -601,178 +508,226 @@ def send_to_ai(driver, mode, initial_xpath, subsequent_xpath, is_initial=True):
             actions.send_keys(Keys.RETURN).perform()
             print("Content sent.")
 
+            # Ask if the user wants to continue the conversation
+            while True:
+                continue_choice = input("Continue conversation? (y/n): ").strip().lower()
+                if continue_choice in ['y', 'yes']:
+                    return True # Indicate continue
+                elif continue_choice in ['n', 'no']:
+                    return False # Indicate return to menu
+                else:
+                    print("Invalid input. Please enter 'y' or 'n'.")
+
+
         else:
             print("Invalid mode selected in send_to_ai function.")
-            return
+            return False # Indicate no continuation for invalid mode
 
     except TimeoutException as e:
         print(f"Timeout Exception: {e}")
         print(f"Error: Timed out waiting for an element (XPath: {xpath_to_use}).")
         print("The page might not have loaded correctly, the XPath might be wrong, or the element is not visible.")
+        return False # Indicate no continuation on error
     except WebDriverException as e:
         print(f"WebDriver Exception: {e}")
         print("The browser window might have been closed or become unresponsive.")
+        return False # Indicate no continuation on error
     except Exception as e:
         print(f"An unexpected error occurred in send_to_ai: {e}")
+        return False # Indicate no continuation on error
 
 # --- MODIFIED main ---
 def main():
     config = load_config()
-    # Loads the AI site configurations.
     driver = None # Initialize driver to None
-    # Initializes the 'driver' variable to None at the start of the main function.
 
-    while True:
-        # Starts the main program loop.
+    while True: # Starts the main program loop (AI selection menu)
         # If returning from a browser session, ensure driver is quit
         if driver:
-            # Checks if a WebDriver instance exists (meaning a browser session was active).
             try:
                 print("Cleaning up previous browser session...")
                 driver.quit()
-                # Closes the browser window and ends the WebDriver session.
             except Exception as e:
                 print(f"Note: Error quitting previous driver session: {e}")
             finally:
                 driver = None # Reset driver
-                # Ensures the 'driver' variable is reset to None, regardless of whether quitting was successful.
 
         choice = select_ai(config)
-        # Displays the AI selection menu and gets the user's choice.
 
         if choice == 'add':
-            # Checks if the user wants to add a new AI site.
             config['ai_sites'] = add_new_ai(config.get('ai_sites', {}))
-            # Calls the function to add a new AI site and updates the 'ai_sites' dictionary in the config.
             save_config(config) # Save after adding
             continue # Go back to selection
-            # Skips to the next iteration of the main loop to show the updated selection menu.
         elif choice == 'manage':
-            # Checks if the user wants to manage existing AI sites.
             config['ai_sites'] = manage_ai_sites(config.get('ai_sites', {}))
-            # Calls the function to manage AI sites and updates the 'ai_sites' dictionary in the config.
             save_config(config) # Save after managing
             continue # Go back to selection
-            # Skips to the next iteration of the main loop.
         elif choice == 'config_profile':
-            # Checks if the user wants to configure the browser profile.
             config = configure_browser_profile(config)
-            # Calls the function to configure the browser profile and updates the config.
             continue # Go back to selection
-            # Skips to the next iteration of the main loop.
         elif choice == 'config_datadir':
-            # Checks if the user wants to configure browser data directories.
             config = configure_browser_data_dir(config)
-            # Calls the function to configure browser data directories and updates the config.
             continue # Go back to selection
         elif choice == 'select_datadir':
-            # Checks if the user wants to select a browser data directory.
             config = select_browser_data_dir(config)
-            # Calls the function to select a browser data directory and updates the config.
             continue # Go back to selection
-        elif choice == 'exit':
-            # Checks if the user wants to exit the program.
+        elif choice == 'exit': # Handle the new exit option
             print("\nExiting program...")
             return # Exit the main function, which will end the program
 
         # --- Open selected AI in browser ---
         site = config['ai_sites'][choice]
-        # Retrieves the details of the selected AI site from the 'ai_sites' dictionary in the config.
         browser_profile = config.get('browser_profile', 'Default') # Get global profile
-        # Retrieves the global browser profile from the config, defaulting to 'Default'.
         selected_data_dir_key = config.get('selected_user_data_dir_key', 'default_apexnelbo')
         user_data_dir = config.get('browser_data_dirs', {}).get(selected_data_dir_key)
-        # Retrieves the user data directory path based on the selected key.
         driver = open_in_browser(site['url'], browser_profile, user_data_dir)
-        # Calls the function to open the selected AI site in the browser, passing the URL, browser profile, and user data directory.
 
         # --- Check if driver launched successfully ---
         if driver is None:
-            # Checks if the browser failed to launch (open_in_browser returns None on failure).
             print("\nFailed to launch the browser. Please check error messages above.")
-            input("Press Enter to return to AI selection...") # Pause for user to read errors
+            input("Press Enter to return to AI selection...")
             continue # Go back to the start of the loop (AI selection)
         # --- End check ---
 
-        is_initial = True # Use initial XPath for the first interaction in this session
-        # Sets a flag to indicate that the initial XPath should be used for the first interaction with the selected AI site.
+        # Initialize WebDriverWait after driver is successfully launched
+        wait = WebDriverWait(driver, 30) # Initialize wait here
+
+        is_initial = True # Use initial XPath for the first interaction in this browser session
 
         # --- Main interaction loop for the selected AI ---
-        while True:
-            # Starts an inner loop for interacting with the chosen AI site.
+        while True: # Starts the loop for interacting with the selected AI
             print("\n-------------------------------------")
             print(f"Interacting with: {site['name']}")
             print("-------------------------------------")
             try:
+                # Prompt for the initial message type (text or screenshot) or return/exit
                 mode = input("\nChoose input method:\n"
                              "1: Send clipboard text (+ optional prompt)\n"
                              "2: Send clipboard screenshot (+ optional prompt)\n"
                              "3: Return to AI selection\n"
                              "4: Exit\n"
                              "Choice (1/2/3/4): ").strip()
-                # Prompts the user to choose an input method.
 
                 if mode not in ["1", "2", "3", "4"]:
-                    # Checks if the user's input is one of the valid mode options.
                     print("Invalid choice. Please enter 1, 2, 3, or 4.")
-                    continue # Continues to the next iteration of the inner loop
+                    continue
 
-            except ValueError:
-                print(f"Invalid input. Please enter a number.")
-                continue
-            except EOFError: # Handle Ctrl+D or unexpected end of input
-                print("\nInput interrupted. Exiting.")
-                mode = "4" # Treat as exit
+                # --- Handle user choice ---
+                if mode == "3":
+                    print("\nReturning to AI selection...")
+                    # Cleanup happens at the start of the outer loop
+                    break # Break inner loop to go back to AI selection
 
-            # --- Handle user choice ---
-            if mode == "3":
-                # Checks if the user wants to return to the AI selection menu.
-                print("\nReturning to AI selection...")
-                # Cleanup happens at the start of the outer loop
-                break # Break inner loop to go back to AI selection
+                elif mode == "4":
+                    print("\nExiting program...")
+                    if driver:
+                        try:
+                            driver.quit()
+                        except Exception as e:
+                            print(f"Note: Error quitting driver during exit: {e}")
+                    return # Exit program completely
 
-            elif mode == "4":
-                # Checks if the user wants to exit the program.
-                print("\nExiting program...")
-                if driver:
+                else: # Mode 1 or 2
+                    # --- Check if driver is still valid before sending ---
+                    if not driver or not driver.window_handles:
+                        print("\nError: Browser window seems to be closed or unresponsive.")
+                        input("Press Enter to return to AI selection...")
+                        break # Break inner loop
+
                     try:
-                        driver.quit()
+                        # A quick check to see if interaction is possible
+                        _ = driver.current_url
+                    except WebDriverException as e:
+                        print(f"\nError: Browser seems unresponsive ({e}).")
+                        input("Press Enter to return to AI selection...")
+                        break # Break inner loop
                     except Exception as e:
-                        print(f"Note: Error quitting driver during exit: {e}")
-                return # Exit program completely
+                         print(f"\nAn unexpected error occurred during browser check ({e}).")
+                         input("Press Enter to return to AI selection...")
+                         break # Break inner loop
 
-            else: # Mode 1 or 2
-                # --- Check if driver is still valid before sending ---
-                if not driver or not driver.window_handles:
-                    # Checks if the WebDriver instance is valid and if there are any open browser windows.
-                    print("\nError: Browser window seems to be closed or unresponsive.")
-                    input("Press Enter to return to AI selection...")
-                    break # Break inner loop
 
-                try:
-                    # A quick check to see if interaction is possible
-                    _ = driver.current_url
-                except WebDriverException as e:
-                    print(f"\nError: Browser seems unresponsive ({e}).")
-                    input("Press Enter to return to AI selection...")
-                    break # Break inner loop
+                    # --- Send the initial message and check if user wants to continue ---
+                    # Pass the wait object to send_to_ai
+                    continue_conversation = send_to_ai(driver, mode, site['initial_xpath'], site['subsequent_xpath'], is_initial, wait)
+                    is_initial = False # After the first message, subsequent messages will use the subsequent XPath
 
-                # --- Send content ---
-                send_to_ai(driver, mode, site['initial_xpath'], site['subsequent_xpath'], is_initial)
-                # Calls the function to send content to the AI interface.
-                is_initial = False # Use subsequent XPath for next interactions
-                # Sets the flag to False after the first interaction, so subsequent interactions use the 'subsequent_xpath'.
-        # --- End of inner interaction loop ---
-    # --- End of outer main loop ---
+                    # --- Start Continue Conversation Loop if user chose to continue ---
+                    if continue_conversation:
+                        print("\nEntering continue conversation mode. Type your message and press Enter to send.")
+                        print("Type 'menu' to return to the main AI selection.")
+
+                        while True: # Loop for continuous text input
+                            try: # Inner try block for continue mode messages
+                                next_message = input(">> ").strip()
+
+                                if next_message.lower() == 'menu':
+                                    print("Returning to AI selection...")
+                                    break # Exit the continue conversation loop
+
+                                elif not next_message:
+                                     print("Empty message. Type 'menu' to exit continue mode.")
+                                     continue # Skip sending if the message is empty
+
+                                # Locate and send the next message using the subsequent XPath
+                                # Use the subsequent XPath for all messages within the continue mode
+                                xpath_for_continue = site['subsequent_xpath']
+                                print(f"Attempting to find input element using XPath: {xpath_for_continue}")
+
+                                # Use the 'wait' object from the main function
+                                search_bar_continue = wait.until(EC.visibility_of_element_located((By.XPATH, xpath_for_continue)))
+                                search_bar_continue.click() # Ensure focus
+                                time.sleep(0.2) # Small delay
+                                search_bar_continue.send_keys(next_message)
+                                time.sleep(0.3) # Small delay
+
+                                actions = ActionChains(driver)
+                                # No need for manual Enter here as the user already pressed Enter after typing
+                                actions.send_keys(Keys.RETURN).perform()
+                                print("Message sent.")
+
+                            except TimeoutException:
+                                print(f"Error: Timed out waiting for the input element (XPath: {xpath_for_continue}) in continue mode.")
+                                print("Returning to AI selection.")
+                                break # Exit the continue conversation loop
+                            except WebDriverException as e:
+                                print(f"Error interacting with the browser in continue mode: {e}")
+                                print("Returning to AI selection.")
+                                break # Exit the continue conversation loop
+                            except EOFError:
+                                print("\nInput interrupted in continue mode. Returning to AI selection.")
+                                break # Exit the continue conversation loop
+                            except Exception as e:
+                                print(f"An unexpected error occurred in continue mode: {e}")
+                                print("Returning to AI selection.")
+                                break # Exit the continue conversation loop
+                # If continue_conversation was False (user chose not to continue) or the continue loop broke,
+                # execution continues here, still within the OUTER try block.
+
+            # These except clauses are for the OUTER try block that started before the mode input.
+            except TimeoutException as e:
+                print(f"Timeout Exception: {e}")
+                print(f"Error: Timed out during interaction. Returning to AI selection.")
+                break # Break the outer interaction loop
+            except WebDriverException as e:
+                print(f"WebDriver Exception: {e}")
+                print("The browser window might have been closed or become unresponsive. Returning to AI selection.")
+                break # Break the outer interaction loop
+            except EOFError:
+                 print("\nInput interrupted. Returning to AI selection.")
+                 break # Break the outer interaction loop
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                print("Returning to AI selection.")
+                break # Break the outer interaction loop
+
+        # If the inner interaction loop breaks, the outer loop continues, returning to AI selection.
+        # The driver is quit at the beginning of the outer loop if it exists.
+
 
 if __name__ == "__main__":
-    # This block ensures that the code inside it only runs when the script is executed directly (not when imported as a module).
     print("Starting AI Interaction Script...")
-    # Prints a message indicating the script has started.
     # Optional: Check Selenium version
     print(f"Using Selenium version: {selenium.__version__}")
-    # Prints the version of the Selenium library being used.
     main()
-    # Calls the main function to start the program's execution.
     print("\nScript finished.")
-    # Prints a message indicating that the script has finished.
