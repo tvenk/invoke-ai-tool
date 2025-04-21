@@ -31,11 +31,16 @@ You have two options for installing this tool: running the Python script directl
 1.  **Download the Script:** You can download the `invoke.py` file from this GitHub repository.
 2.  **Place the Script:** Save the `invoke.py` file to a directory on your computer.
 3.  **Install Dependencies:** Make sure you have the necessary Python libraries installed as mentioned in the [Prerequisites](#prerequisites) section.
-4.  **Activate Virtual Environment (Recommended):** If you are using a virtual environment (like `cli_venv`), activate it in your terminal before running the script:
-    ```bash
-    source /path/to/your/cli_venv/bin/activate
-    ```
-    (Replace `/path/to/your/cli_venv` with the actual path to your virtual environment).
+4.  **Use a Virtual Environment (Recommended):** It's highly recommended to use a Python virtual environment to manage dependencies for this tool separately from your system's Python installation.
+    * **Create a Virtual Environment:** Navigate to the directory where you saved `invoke.py` and create a virtual environment (replace `myvenv` with your desired name):
+        ```bash
+        python3 -m venv myvenv
+        ```
+    * **Activate the Virtual Environment:** Activate the environment in your terminal before running the script:
+        ```bash
+        source myvenv/bin/activate
+        ```
+        Your terminal prompt should change to indicate the virtual environment is active (e.g., `(myvenv) your_username@your_computer:~/$`).
 
 **Option 2: Installing via the `.deb` Package**
 
@@ -114,8 +119,11 @@ You might need to inspect the AI website's HTML source code using your browser's
 
 1.  **Open your terminal.**
 2.  **Run the Tool:**
-    * **If you installed by running the Python script directly:** Navigate to the directory where you saved `invoke.py` (and activated your virtual environment) and run:
+    * **If you installed by running the Python script directly:** Navigate to the directory where you saved `invoke.py`, activate your virtual environment, and run:
         ```bash
+        # Activate your virtual environment (replace myvenv with your name)
+        source myvenv/bin/activate
+        # Run the script
         python3 invoke.py
         ```
     * **If you installed using the `.deb` package:** Simply run:
@@ -162,5 +170,7 @@ Here's how to find the user data directory for common browsers on Ubuntu:
 **Note:** For snap installations of browsers, the data directory might be in a different location, for example, under `/home/[your_username]/snap/[browser-name]/common/.config/[browser-name]/.`
 
 ## Contributing
+
+If you'd like to contribute to this tool, feel free to fork the repository on GitHub, make your changes, and submit a pull request. Please credit tvenk thank you, best wishes!
 
 If you'd like to contribute to this tool, feel free to fork the repository on GitHub, make your changes, and submit a pull request. Please credit tvenk thank you, best wishes!
