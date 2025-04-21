@@ -3,6 +3,18 @@
 
 This tool automates interactions with various AI websites using a web browser (specifically designed for Brave but can be adapted). It allows you to send text or screenshots from your clipboard to the AI chat interface.
 
+## Table of Contents
+
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+* [Configuration](#configuration)
+    * [Browser Profile](#browser-profile)
+    * [Browser Data Directories](#browser-data-directories)
+    * [AI Sites](#ai-sites)
+* [Usage](#usage)
+* [Finding Browser Data Directories on Ubuntu](#finding-browser-data-directories-on-ubuntu)
+* [Contributing](#contributing)
+
 ## Prerequisites
 
 Before using this tool, you need to have the following installed on your Ubuntu system:
@@ -154,6 +166,7 @@ You might need to inspect the AI website's HTML source code using your browser's
         * You will be prompted to type an optional question or additional context. Press Enter when done (leave blank if none).
         * The script will attempt to paste the screenshot into the AI's input field. If you provided text, the text will be typed first, then the screenshot will be pasted. This might take a few seconds.
         * Press Enter again in the terminal to send the screenshot (and optional text).
+    * **After sending the message (using option 1 or 2), you will be prompted whether you want to continue the conversation (y/n).**
     * **3: Return to AI selection:** This will close the current browser window (if it was opened by the script) and take you back to the main menu to choose a different AI site.
     * **4: Exit:** This will close the browser (if open) and terminate the script.
 7.  **Subsequent Interactions:** After sending a message, the script will try to use the "subsequent XPath" for the input field for the next interaction.
@@ -170,7 +183,5 @@ Here's how to find the user data directory for common browsers on Ubuntu:
 **Note:** For snap installations of browsers, the data directory might be in a different location, for example, under `/home/[your_username]/snap/[browser-name]/common/.config/[browser-name]/.`
 
 ## Contributing
-
-If you'd like to contribute to this tool, feel free to fork the repository on GitHub, make your changes, and submit a pull request. Please credit tvenk thank you, best wishes!
 
 If you'd like to contribute to this tool, feel free to fork the repository on GitHub, make your changes, and submit a pull request. Please credit tvenk thank you, best wishes!
