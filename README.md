@@ -31,6 +31,11 @@ You have two options for installing this tool: running the Python script directl
 1.  **Download the Script:** You can download the `invoke.py` file from this GitHub repository.
 2.  **Place the Script:** Save the `invoke.py` file to a directory on your computer.
 3.  **Install Dependencies:** Make sure you have the necessary Python libraries installed as mentioned in the [Prerequisites](#prerequisites) section.
+4.  **Activate Virtual Environment (Recommended):** If you are using a virtual environment (like `cli_venv`), activate it in your terminal before running the script:
+    ```bash
+    source /path/to/your/cli_venv/bin/activate
+    ```
+    (Replace `/path/to/your/cli_venv` with the actual path to your virtual environment).
 
 **Option 2: Installing via the `.deb` Package**
 
@@ -43,7 +48,25 @@ You have two options for installing this tool: running the Python script directl
     ```bash
     sudo apt --fix-broken install
     ```
-4.  **The tool will be installed and you can run it from your terminal using the command `ai-interaction-tool`.**
+4.  **Run the Installed Tool:** The tool will be installed and you can run it from your terminal using the command `invoke`. You will see output similar to this:
+    ```
+    **apexnelbo@ancient-HP-ENVY-TS-17-Notebook-PC:~$ invoke**
+    Starting AI Interaction Script...
+    Using Selenium version: 4.18.1 # (Version number may vary)
+
+    Choose your AI destination:
+    1: Kimi AI ([https://kimi.ai/](https://kimi.ai/)) # (Configured sites will appear here)
+
+    Options:
+    add: Add a new AI site
+    manage: Edit/remove AI sites
+    config_profile: Configure Browser Profile
+    config_datadir: Configure Browser Data Directories
+    select_datadir: Select Browser Data Directory
+    exit: Close the program
+
+    Select AI by number or option:
+    ```
 
 ## Configuration
 
@@ -79,7 +102,7 @@ You can add, edit, and remove the AI websites that the tool interacts with:
 1.  **Run the tool from the terminal**.
 2.  In the main menu:
     * To add a new AI site, select `add: Add a new AI site` and follow the prompts for the name, URL, and the XPath for the input field.
-    * To manage existing sites, select `manage: Edit/remove AI sites`. You can then choose a site to edit (name, URL, XPaths) or remove.
+    * To manage existing sites, select `manage: Edit/remove AI sites`. You can then choose a site by number to edit (name, URL, XPaths) or remove.
 
 The tool requires two XPath expressions for each AI site:
 * **Initial XPath:** The XPath of the input field when you first load the AI website.
@@ -91,13 +114,13 @@ You might need to inspect the AI website's HTML source code using your browser's
 
 1.  **Open your terminal.**
 2.  **Run the Tool:**
-    * **If you installed by running the Python script directly:** Navigate to the directory where you saved `invoke.py` and run:
+    * **If you installed by running the Python script directly:** Navigate to the directory where you saved `invoke.py` (and activated your virtual environment) and run:
         ```bash
         python3 invoke.py
         ```
     * **If you installed using the `.deb` package:** Simply run:
         ```bash
-        ai-interaction-tool
+        invoke
         ```
 3.  **Select an AI Destination:** The tool will display a numbered list of the AI sites you have configured. Enter the number corresponding to the AI you want to use and press Enter.
 4.  **Select Browser Data Directory:** If you have configured multiple browser data directories, you will be prompted to select which one to use for this session. Enter the name of the desired directory.
@@ -121,7 +144,7 @@ You might need to inspect the AI website's HTML source code using your browser's
         * Copy a screenshot to your clipboard (you can usually do this with tools like `gnome-screenshot` and selecting "Copy to Clipboard").
         * Press Enter in the terminal.
         * You will be prompted to type an optional question or additional context. Press Enter when done (leave blank if none).
-        * The script will attempt to paste the screenshot into the AI's input field after any typed text. This might take a few seconds.
+        * The script will attempt to paste the screenshot into the AI's input field. If you provided text, the text will be typed first, then the screenshot will be pasted. This might take a few seconds.
         * Press Enter again in the terminal to send the screenshot (and optional text).
     * **3: Return to AI selection:** This will close the current browser window (if it was opened by the script) and take you back to the main menu to choose a different AI site.
     * **4: Exit:** This will close the browser (if open) and terminate the script.
@@ -134,9 +157,9 @@ Here's how to find the user data directory for common browsers on Ubuntu:
 * **Brave Browser:** Typically located at `/home/[your_username]/.config/BraveSoftware/Brave-Browser/`. Replace `[your_username]` with your actual username.
 * **Google Chrome:** Usually found at `/home/[your_username]/.config/google-chrome/`.
 * **Chromium:** Typically located at `/home/[your_username]/.config/chromium/`.
-* **Mozilla Firefox:** Firefox stores profile data differently. The main directory is usually `/home/[your_username]/.mozilla/firefox/`. Inside this, you'll find one or more folders with names like `xxxxxxxx.default-release`. For Firefox, you would likely configure the main Firefox directory in the tool and rely on the profile name setting.
+* **Mozilla Firefox:** Firefox stores profile data differently. The main directory is usually `/home/[your_username]/.mozilla/firefox/`. Inside this, you'll find one or more folders with names like `xxxxxxxx.default-release`. For Firefox, you would likely configure the main Firefox directory in the tool and rely on the browser profile setting.
 
-**Note:** For snap installations of browsers, the data directory might be in a different location, for example, under `/home/[your_username]/snap/[browser-name]/common/.config/[browser-name]/`.
+**Note:** For snap installations of browsers, the data directory might be in a different location, for example, under `/home/[your_username]/snap/[browser-name]/common/.config/[browser-name]/.`
 
 ## Contributing
 
